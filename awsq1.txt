@@ -1,0 +1,53 @@
+1. Create an instance, install apache server and add an index.html file and view that file in
+the browser. Take snapshot of this instance and deploy it in another region.
+Deliverable: Mention the steps for achieving this
+
+STEPS
+
+1. Launch an ec2 instance
+
+     Choose ami,choose vpc,subnet,add tags,security group etc,.
+     create a new key pair and download it or choose existing key pair if you have
+     go to SSH and launch the ec2 server using its public IP and private key
+    IMP: in rules,add a rule to allow HTTP traffic of port 80 also.
+    IMP: The VPC should have Edit DNS hostname, Edit DNS resolution as Enable.
+
+2. Install the apache server using the command
+     
+     $ sudo yum -y httpd
+
+3. Launch apache server using the command
+    
+     $ sudo service httpd start
+
+4. install amazon efs on ec2 and mount it using your file system id (also create a file system in Amazon EFS and get file system id)
+
+    $ sudo yum -y install amazon-efs-utils
+    $ sudo mount -t efs fs-54b725ff:/ /var/www/html/efs
+
+5. create a new directory 
+     
+     $ sudo mkdir /var/www/html/efs
+     $ cd /var/www/html/efs
+
+6. make a  subdirectory sample and attach index.html file to it using file upload
+     
+    $ sudo mkdir sample
+    $ sudo chown  ec2-user sample
+    $ sudo chmod -R o+r sample
+    $ cd sample
+    create index.html file and upload here.
+7. open the browser and enter this url file to view index.html
+
+   http://fs-54b725ff/efs/sample/hello.html
+
+8. go to Ec2 console and then to snapshots
+   create new snapshot by spectfying the ec2 instance
+
+9. copy the snapshot and select any other region to deploy it there
+
+10. go to the destination region to check the snapshot is created there or not.
+    If it is created then done.
+
+  
+ 

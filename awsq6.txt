@@ -1,0 +1,22 @@
+{
+    "Id": "S3Policy",
+    "Statement": [
+        {
+            "Sid": "IPDeny",
+            "Effect": "Deny",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::my-bucket/*",
+            "Condition": {
+                "NotIpAddress": {
+                    "aws:SourceIp":  [
+                    "34.208.202.82/24",
+                    "203.0.113.0/24"
+                ]
+                }
+            }
+        }
+    ]
+}
