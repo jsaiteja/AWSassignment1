@@ -1,0 +1,24 @@
+import json
+
+import boto3
+
+s3=boto3.client('s3')
+
+def lambda_handler(event, context):
+
+    # TODO implement
+
+    for s in event['Records']
+
+    msg=s['body'].split()
+
+    src_name=msg[0]
+
+    src_key=msg[1]
+
+    target_key=msg[2]
+
+    copy_src={'Bucket':src_name,'Key':src_key}
+
+    s3.copy(copy_src,src_name,target_key)
+   
