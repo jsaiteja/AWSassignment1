@@ -1,0 +1,127 @@
+{
+  "Description": "EC2 creation",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "TagKey": {
+      "Description": "The EC2 tag",
+      "Type": "String",
+      "Default": "Name",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Can contain only ASCII characters."
+    },
+    "TagValue": {
+      "Description": "The EC2 tag value",
+      "Type": "String",
+      "Default": "Jenkins",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Can contain only ASCII characters."
+    },
+    "InstanceType": {
+      "Description": "Amazon EC2 instance type.",
+      "Type": "String",
+      "Default": "t2.micro",
+      "ConstraintDescription": "Must be a valid Amazon EC2 instance type."
+    }, 
+    "OperatingSystem": {
+      "Description": "Amazon EC2 operating system type (Linux or Windows).",
+      "Type": "String",
+      "Default": "Ubuntu"
+    },
+    "WebserverIP":{
+      "Description": "Ip of the front end webserver",
+      "Type": "String",
+      "Default": "0.0.0.0/0"
+
+    }
+  },
+  "Mappings": {
+    "RegionOS2AMI": {
+      "us-east-1": {
+        "Ubuntu":"ami-04b9e92b5572fa0d1"
+      }
+    }
+  },
+  
+  "Resources": {
+    "UbuntuJenkinsEC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionOS2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Ref": "OperatingSystem"
+            }
+          ]
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "SecurityGroup"
+          }
+        ],
+
+
+        "Tags": [
+          {
+            "Key": {
+              "Ref": "TagKey"
+            },
+            "Value": {
+              "Ref": "TagValue"
+            }
+          }
+        ]
+      }
+    },
+
+    "SecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable Jenkins access via port 8080 and SSH access.",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8080",
+            "ToPort": "8080",
+            "CidrIp":{
+                  "Ref": "WebserverIP"
+                }
+          }
+        ]
+      }
+    },
+	
+    "S3Bucket" : {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+        "AccessControl" : "PublicRead",
+        "WebsiteConfiguration" : {
+          "IndexDocument" : "index.html",
+          "ErrorDocument" : "error.html"
+         }
+      }
+
+    }
+  },
+
+    
+	
+
+   
+
+  "Outputs": {
+    "JenkinsInstanceIP": {
+      "Value" : { 
+          "Fn::GetAtt" : [ "UbuntuJenkinsEC2Instance", "PublicIp" ]},
+          "Description" : "Server's PublicIp Address"
+    }
+    
+  }
+}
+
